@@ -1,0 +1,75 @@
+// Prisma schema file
+// Clinic Appointment Booking API
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  PATIENT
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  name      String
+  role      Role      @default(PATIENT)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+}
+
+model Doctor {
+  id        String   @id @default(uuid())
+  name      String
+  specialty String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  slots     Slot[]
+}
+
+model Slot {
+  id        String    @id @default(uuid())
+  doctorId  String
+  doctor    Doctor    @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  startsAt  DateTime
+  endsAt    DateTime
+  version   Int       @default(0)
+  createdAt DateTime  @default(now())
+  bookings  Booking[]
+
+  @@unique([doctorId, startsAt])
+  @@index([doctorId])
+  @@index([startsAt])
+}
+
+model Booking {
+  id        String        @id @default(uuid())
+  slotId    String
+  slot      Slot          @relation(fields: [slotId], references: [id], onDelete: Restrict)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  status    BookingStatus @default(PENDING)
+  expiresAt DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([slotId])
+  @@index([userId])
+  @@index([status, expiresAt])
+}
