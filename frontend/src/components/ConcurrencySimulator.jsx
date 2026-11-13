@@ -25,7 +25,7 @@ import {
   Info,
   ShieldCheck,
 } from 'lucide-react';
-import { apiRequest } from '../api';
+import { apiRequest, BASE_URL } from '../api';
 import { useToast } from '../context/ToastContext';
 
 export default function ConcurrencySimulator({
@@ -158,7 +158,7 @@ export default function ConcurrencySimulator({
       const startTime = performance.now();
       try {
         const bookRes = await fetch(
-          `http://localhost:3000/bookings?strategy=${strategy}`,
+          `${BASE_URL}/bookings?strategy=${strategy}`,
           {
             method: 'POST',
             headers: {
