@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.*
+!.env.example
+coverage/
+dist/
+.DS_Store
+*.log
+.agent/
+.claude/
+.cursor/
+.devin/
+.postgres-data/
+.postgres-data-test/
+.postgres-test-data/
